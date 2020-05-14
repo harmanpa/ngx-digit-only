@@ -39,12 +39,14 @@
       id="digit-only-min-max-binding"
       type="text"
       digitOnly
+      [decimal]="true"
+      [allowNegative]="true"
       placeholder="Between {{ min }} and {{ max }}"
       [min]="min"
       [max]="max"
     />
     Min
-    <input id="min" type="text" digitOnly placeholder="Min" [(ngModel)]="min" />
+    <input id="min" type="text" digitOnly [allowNegative]="true" placeholder="Min" [(ngModel)]="min" />
     Max
     <input id="max" type="text" digitOnly placeholder="Max" [(ngModel)]="max" />
   </section>

@@ -29,6 +29,7 @@ export class DigitOnlyDirective implements OnChanges {
 
   @Input() decimal = false;
   @Input() decimalSeparator = '.';
+  @Input() allowNegative = false;
   @Input() min = -Infinity;
   @Input() max = Infinity;
   @Input() pattern?: string | RegExp;
@@ -67,7 +68,8 @@ export class DigitOnlyDirective implements OnChanges {
       (e.key === 'c' && e.metaKey === true) || // Allow: Cmd+C (Mac)
       (e.key === 'v' && e.metaKey === true) || // Allow: Cmd+V (Mac)
       (e.key === 'x' && e.metaKey === true) || // Allow: Cmd+X (Mac)
-      (this.decimal && e.key === this.decimalSeparator && !this.hasDecimalPoint) // Allow: only one decimal point
+      (this.decimal && e.key === this.decimalSeparator && !this.hasDecimalPoint) || // Allow: only one decimal point
+      (this.allowNegative && e.key === '-' && this.inputElement.selectionStart === 0) // Allow: minus sign only at start
     ) {
       // let it happen, don't do anything
       return;
@@ -125,12 +127,9 @@ export class DigitOnlyDirective implements OnChanges {
 
   private sanitizeInput(input: string): string {
     let result = '';
-    if (this.decimal && this.isValidDecimal(input)) {
-      const regex = new RegExp(`[^0-9${this.decimalSeparator}]`, 'g');
-      result = input.replace(regex, '');
-    } else {
-      result = input.replace(/[^0-9]/g, '');
-    }
+    const regex = new RegExp('[^' + (this.allowNegative ? '-' : '') + '0-9'
+        + (this.decimal ? this.decimalSeparator : '') + ']', 'g');
+    result = input.replace(regex, '');
 
     const maxLength = this.inputElement.maxLength;
     if (maxLength > 0) {
